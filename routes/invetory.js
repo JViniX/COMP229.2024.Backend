@@ -12,9 +12,9 @@ router.get('/list', inventoryController.invetoryList);
 router.put('/edit/:id', authController.requireSignin, inventoryController.processEdit);
 
 // Delete
-router.delete('/delete/:id', authController.requireSignin, inventoryController.performDelete);
+router.delete('/delete/:id', inventoryController.performDelete);
 
 /* POST Route for processing the Add page - CREATE Operation */
-router.post('/add', authController.requireSignin, inventoryController.processAdd);
+router.post('/add', inventoryController.processAdd);
 
 module.exports = router;

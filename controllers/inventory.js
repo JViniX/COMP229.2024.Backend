@@ -3,9 +3,11 @@ let InventoryModel = require('../models/inventory');
 module.exports.invetoryList = async function (req, res, next) {
 
     try {
-        let list = await InventoryModel.find({}).populate('owner');
-        
-        res.json(list);
+        let list;
+        setTimeout( async () => {
+            list = await InventoryModel.find({}).populate('owner');
+            res.json(list);
+        }, 2000);
     } catch (error) {
         console.log(error);
         next(error);
@@ -15,7 +17,7 @@ module.exports.invetoryList = async function (req, res, next) {
 
 module.exports.processAdd = async (req, res, next) => {
     try {
-        console.log("req.payload: ", req.auth);
+        // console.log("req.payload: ", req.auth);
         let newProduct = InventoryModel({
             item: req.body.item,
             qty: req.body.qty,
@@ -25,8 +27,8 @@ module.exports.processAdd = async (req, res, next) => {
                 w: req.body.size.w,
                 uom: req.body.size.uom
             },
-            tags: req.body.tags.split(",").map(word => word.trim()),
-            owner: (req.body.owner == null || req.body.owner == "")? req.auth.id : req.body.owner
+            tags: req.body.tags.split(",").map(word => word.trim())
+            // owner: (req.body.owner == null || req.body.owner == "")? req.auth.id : req.body.owner
         });
 
         let result = await InventoryModel.create(newProduct)
