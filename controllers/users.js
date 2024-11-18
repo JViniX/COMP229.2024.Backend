@@ -33,7 +33,9 @@ module.exports.userGet = async function (req, res, next) {
     try {
         let uID = req.params.userID;
 
-        req.user = await UserModel.findOne({ _id: uID }, '-password');
+        let user = await UserModel.findOne({ _id: uID }, '-hashed_password -salt');
+        console.log(user);
+        req.user = user;
         next();
 
     } catch (error) {
