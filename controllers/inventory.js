@@ -3,16 +3,27 @@ let InventoryModel = require('../models/inventory');
 module.exports.invetoryList = async function (req, res, next) {
 
     try {
-        let list;
-        setTimeout( async () => {
-            list = await InventoryModel.find({}).populate('owner');
-            res.json(list);
-        }, 2000);
+        let list = await InventoryModel.find({}).populate('owner');
+        res.json(list);
     } catch (error) {
         console.log(error);
         next(error);
     }
 
+}
+
+module.exports.getByID = async function (req, res, next) {
+    try {
+        let item = await InventoryModel.findOne({ _id: req.params.id });
+        if (!item)
+            throw new Error('Item not found. Are you sure it exists?')
+
+        res.json(item);
+
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
 }
 
 module.exports.processAdd = async (req, res, next) => {
