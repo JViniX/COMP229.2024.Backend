@@ -1,18 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
-let usersController = require('../controllers/users');
-let authController = require('../controllers/auth');
+let firebaseAuthController = require('../controllers/firebaseAuth');
 
-router.post('/signin', authController.signin);
-router.get('/list', usersController.list);
-router.post('/create', usersController.create);
-router.get('/get/:userID', usersController.userGet, usersController.userByID);
-router.put('/edit/:userID', usersController.update);
-router.delete('/delete/:userID', usersController.remove);
-
-router.put('/setadmin/:userID', 
-  authController.requireSignin, 
-  usersController.setAdmin);
+router.post('/create', firebaseAuthController.signup);
 
 module.exports = router;

@@ -4,6 +4,7 @@
  * Module dependencies.
  */
 
+var firebaseAdmin = require('./config/firebase');
 var db = require('./config/mongoose');
 var app = require('./config/express');
 var debug = require('debug')('comp229backend:server');
@@ -20,6 +21,7 @@ app.set('port', port);
  * Create HTTP server.
  */
 
+firebaseAdmin();
 db();
 var server = http.createServer(app);
 
