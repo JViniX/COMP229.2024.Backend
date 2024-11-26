@@ -1,5 +1,4 @@
 let InventoryModel = require('../models/inventory');
-let UserModel = require('../models/users');
 
 module.exports.invetoryList = async function (req, res, next) {
 

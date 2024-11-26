@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 
 let inventoryController = require('../controllers/inventory');
-let authController = require('../controllers/auth');
 let firebaseAuthController = require('../controllers/firebaseAuth');
 
 /* GET list of items */
