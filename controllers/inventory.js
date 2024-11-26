@@ -1,4 +1,5 @@
 let InventoryModel = require('../models/inventory');
+let UserModel = require('../models/users');
 
 module.exports.invetoryList = async function (req, res, next) {
 
@@ -28,7 +29,7 @@ module.exports.getByID = async function (req, res, next) {
 
 module.exports.processAdd = async (req, res, next) => {
     try {
-        // console.log("req.payload: ", req.auth);
+        console.log("req.payload: ", req.auth);
         let newProduct = InventoryModel({
             item: req.body.item,
             qty: req.body.qty,
@@ -38,8 +39,8 @@ module.exports.processAdd = async (req, res, next) => {
                 w: req.body.size.w,
                 uom: req.body.size.uom
             },
-            tags: req.body.tags.split(",").map(word => word.trim())
-            // owner: (req.body.owner == null || req.body.owner == "")? req.auth.id : req.body.owner
+            tags: req.body.tags.split(",").map(word => word.trim()),
+            owner: (req.body.owner == null || req.body.owner == "")? req.auth.id : req.body.owner
         });
 
         let result = await InventoryModel.create(newProduct)
@@ -71,7 +72,7 @@ module.exports.processEdit = async (req, res, next) => {
                 uom: req.body.size.uom
             },
             tags: req.body.tags.split(",").map(word => word.trim()),
-            // owner: (req.body.owner == null || req.body.owner == "")? req.payload.id : req.body.owner
+            owner: (req.body.owner == null || req.body.owner == "")? req.auth.id : req.body.owner
         });
 
         // Submits updatedProduct to the DB and waits for a result.
@@ -123,6 +124,44 @@ module.exports.performDelete = async (req, res, next) => {
 
     } catch (error) {
         console.log(error);
+        next(error);
+    }
+}
+
+module.exports.hasAuthorization = async function(req, res, next){
+
+    try {
+        let id = req.params.id
+        let inventoryItem = await InventoryModel.findById(id).populate('owner');
+        console.log(inventoryItem);
+
+        // If there is no item found.
+        if (inventoryItem == null) {
+            throw new Error('Item not found.') // Express will catch this on its own.
+        }
+        else if (inventoryItem.owner != null) { // If the item found has a owner.
+
+            if (inventoryItem.owner.id != req.auth.id) { // If the owner differs.
+
+                let currentUser = await UserModel.findOne({_id: req.auth.id}, 'admin');
+  
+                if(currentUser.admin != true){ // If the user is not a Admin
+
+                    console.log('====> Not authorized');
+                    return res.status(403).json(
+                        {
+                            success: false,
+                            message: 'User is not authorized to modify this item.'
+                        }
+                    );
+                }
+            }
+        }
+
+        // If it reaches this point, runs the next middleware.
+        next();
+    } catch (error) {
+        console.log(error);   
         next(error);
     }
 }

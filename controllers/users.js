@@ -99,3 +99,44 @@ module.exports.remove = async function (req, res, next) {
         next(error);
     }
 }
+
+
+module.exports.setAdmin = async function (req, res, next) {
+
+    try {
+        // Check if the current user is admin. Only admins can set another admin.
+        let authorized = await UserModel.findOne({ _id: req.auth.id }, 'admin');
+        console.log("authorized", authorized.admin);
+
+        if (!authorized.admin) {
+            return res.status('403').json(
+                {
+                    success: false,
+                    message: "User is not authorized"
+                }
+            )
+        }
+        else
+        {
+            // Update one single field.
+            let result = await UserModel.updateOne({ _id: req.params.userID }, {admin : true});
+            console.log("setAdmin", result);
+            if (result.modifiedCount > 0) {
+                res.json(
+                    {
+                        success: true,
+                        message: "User promoted successfully."
+                    }
+                );
+            }
+            else {
+                // Express will catch this on its own.
+                throw new Error('User not updated. Are you sure it exists?')
+            }
+        }
+    } catch (error) {
+        console.log(error);
+        next(error)
+    }
+
+}

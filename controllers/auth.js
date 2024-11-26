@@ -42,3 +42,4 @@ module.exports.requireSignin = expressjwt({
     algorithms: ['HS512'],
     userProperty: 'auth' 
 });
+

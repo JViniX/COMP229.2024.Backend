@@ -18,7 +18,7 @@ const UserSchema = new Schema({
   },
   hashed_password: {
     type: String,
-    required: 'Passowrd is required',
+    required: 'Password is required',
   },
   salt: {
     type: String
